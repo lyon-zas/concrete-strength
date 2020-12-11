@@ -18,6 +18,7 @@ def main():
     <h2 style="color:white;text-align:center;">Machine Learning App</h2>
     <h3 style="color:white;text-align:center;">Random Forest Algorithm</h3>
     </div>
+    <h3>Author - Shyamal Raj</h3>
     """
     st.markdown(html_temp, unsafe_allow_html=True)
 
