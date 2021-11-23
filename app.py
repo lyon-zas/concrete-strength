@@ -13,9 +13,10 @@ def predict_strength(cement, slag, ash, water, superplastic, coarseagg, fineagg,
 
 
 def main():
-    st.title("NEON TECH")
+    st.title("")
     html_temp = """
-    <img src="https://github.com/raj-shyamal/Concrete-Strength-Predictor/blob/master/images/neon.jpg?raw=true" alt="neon" float = "right">
+    <img src="https://github.com/raj-shyamal/Concrete-Strength-Predictor/blob/master/images/neon.jpg?raw=true" alt="neon" style="align:center;">
+    <h1 style="color:black;text-align:center;">Neon Tech</h1>
     <div style="background-color:#0E0E0F ;padding:10px">
     <h2 style="color:white;text-align:center;">Concrete Strength Predictor</h2>
     <h3 style="color:white;text-align:center;">Machine Learning App (Random Forest Algorithm)</h3>
