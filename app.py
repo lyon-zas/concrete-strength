@@ -6,19 +6,20 @@ model = pickle.load(open('model.pkl', 'rb'))
 
 
 def predict_strength(cement, slag, ash, water, superplastic, coarseagg, fineagg, age):
-    input = np.array([[cement, slag, ash, water, superplastic, coarseagg, fineagg, age]]).astype(np.float64)
+    input = np.array([[cement, slag, ash, water, superplastic,
+                     coarseagg, fineagg, age]]).astype(np.float64)
     prediction = model.predict(input)
     return float(prediction)
 
 
 def main():
-    st.title("Concrete Strength Predictor")
+    st.title("NEON TECH")
     html_temp = """
     <div style="background-color:#0E0E0F ;padding:10px">
-    <h2 style="color:white;text-align:center;">Machine Learning App</h2>
-    <h3 style="color:white;text-align:center;">Random Forest Algorithm</h3>
+    <h2 style="color:white;text-align:center;">Concrete Strength Predictor</h2>
+    <h3 style="color:white;text-align:center;">Machine Learning App (Random Forest Algorithm)</h3>
     </div>
-    <h3>Author - Shyamal Raj</h3>
+    <h3>Created by - Shyamal Raj, IIT Kgp</h3>
     """
     st.markdown(html_temp, unsafe_allow_html=True)
 
@@ -47,7 +48,8 @@ def main():
     """
     c = float(cement)
     w = float(water)
-    aggre = float(slag) + float(ash) + float(superplastic) + float(coarseagg) + float(fineagg)
+    aggre = float(slag) + float(ash) + float(superplastic) + \
+        float(coarseagg) + float(fineagg)
     if t == 0:
         t = 1
         c_per = int((100 * c) / t)
@@ -59,7 +61,8 @@ def main():
         aggre_per = int((100 * aggre) / t)
 
     if st.button("Predict"):
-        output = int(predict_strength(cement, slag, ash, water, superplastic, coarseagg, fineagg, age))
+        output = int(predict_strength(cement, slag, ash, water,
+                     superplastic, coarseagg, fineagg, age))
 
         if c >= 0.07 * t and c <= .15 * t and w >= 0.14 * t and w <= .21 * t and float(
                 age) != 0 and aggre >= 0.6 * t and aggre <= .75 * t:
@@ -77,39 +80,45 @@ def main():
                     "Add more cement, current cement content is {}%\n\nIdeal cement content in mixture is 7-15%".format(
                         c_per))
                 if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success('Predicted Concrete Strength is {} Mpa'.format(output))
+                    st.success(
+                        'Predicted Concrete Strength is {} Mpa'.format(output))
             elif c > 0.15 * t:
                 st.success(
                     "Reduce cement content, current cement content is {}%\n\nIdeal cement content in mixture is 7-15%".format(
                         c_per))
                 if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success('Predicted Concrete Strength is {} Mpa'.format(output))
+                    st.success(
+                        'Predicted Concrete Strength is {} Mpa'.format(output))
 
             if w < 0.14 * t:
                 st.success(
                     "Add more water, current water content is {}%\n\nIdeal water content in mixture is 14-21%".format(
                         w_per))
                 if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success('Predicted Concrete Strength is {} Mpa'.format(output))
+                    st.success(
+                        'Predicted Concrete Strength is {} Mpa'.format(output))
             elif w > .21 * t:
                 st.success(
                     "Reduce water, current water content is {}%\n\nIdeal water content in mixture is 14-21%".format(
                         w_per))
                 if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success('Predicted Concrete Strength is {} Mpa'.format(output))
+                    st.success(
+                        'Predicted Concrete Strength is {} Mpa'.format(output))
 
             if aggre < 0.60 * t:
                 st.success(
                     "Add more Aggregate, current Aggregate content is {}%\n\nIdeal Aggregate content in mixture is 60-75%".format(
                         aggre_per))
                 if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success('Predicted Concrete Strength is {} Mpa'.format(output))
+                    st.success(
+                        'Predicted Concrete Strength is {} Mpa'.format(output))
             elif aggre > .75 * t:
                 st.success(
                     "Reduce Aggregate content, current Aggregate content is {}%\n\nIdeal Aggregate content in mixture is 60-75%".format(
                         aggre_per))
                 if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success('Predicted Concrete Strength is {} Mpa'.format(output))
+                    st.success(
+                        'Predicted Concrete Strength is {} Mpa'.format(output))
 
 
 if __name__ == '__main__':
