@@ -1,127 +1,51 @@
 import streamlit as st
-import pickle
+import pandas as pd
 import numpy as np
+from tensorflow.keras.models import load_model
 
-model = pickle.load(open('model.pkl', 'rb'))
+# Load the trained model
+model = load_model('compressive_strength_model.h5')
 
+# Create a function to make predictions with the model
+def predict(cement, sand, aggregate, wcr, fib_length, perc_add, wgt_cast, wgt_cure):
+  # Create a numpy array with the input values
+  x = np.array([[cement, sand, aggregate, wcr, fib_length, perc_add, wgt_cast, wgt_cure]])
+  
+  # Make a prediction with the model
+  y_pred = model.predict(x)[0][0]
+  
+  # Round the prediction to 2 decimal places
+  y_pred = round(y_pred, 2)
+  
+  # Return the prediction
+  return y_pred
 
-def predict_strength(cement, slag, ash, water, superplastic, coarseagg, fineagg, age):
-    input = np.array([[cement, slag, ash, water, superplastic,
-                     coarseagg, fineagg, age]]).astype(np.float64)
-    prediction = model.predict(input)
-    return float(prediction)
-
-
+# Create a main function
 def main():
-    st.title("")
-    html_temp = """
-    <img src="https://github.com/raj-shyamal/Concrete-Strength-Predictor/blob/master/images/neon.jpg?raw=true" alt="neon" style="display: block;margin-left: auto;margin-right: auto;width: 50%;">
-    <h1 style="color:black;text-align:center;">Neon Tech</h1>
-    <div style="background-color:#0E0E0F ;padding:10px">
-    <h2 style="color:white;text-align:center;">Concrete Strength Predictor</h2>
-    <h3 style="color:white;text-align:center;">Machine Learning App (Random Forest Algorithm)</h3>
-    </div>
-    <h3>Created by - Shyamal Raj, IIT Kgp</h3>
-    """
-    st.markdown(html_temp, unsafe_allow_html=True)
+  # Display a title
+  
+  st.title('Compressive Strength Prediction')
 
-    t = 1.0
-    cement = st.number_input("Cement (kg/m^3)")
-    slag = st.number_input(" Blast furnace slag (kg/m^3 )")
-    ash = st.number_input("Flyash (kg/m^3)")
-    water = st.number_input("Water (kg/m^3)")
-    superplastic = st.number_input("Superplastisizer (kg/m^3)")
-    coarseagg = st.number_input("Coarse Aggregate (kg/m^3)")
-    fineagg = st.number_input(" Fine Aggregate (kg/m^3)")
-    age = st.number_input("Age (days)")
+  
+  
+  # Create a form to collect input values
+  cement = st.number_input('Cement (kg)')
+  sand = st.number_input('Sand (kg)')
+  aggregate = st.number_input('Aggregate (kg)')
+  wcr = st.number_input('Water/Cement Ratio')
+  fib_length = st.number_input('Oil Palm Fibre Length (cm)')
+  perc_add = st.number_input('Percentage Addition (%)')
+  wgt_cast = st.number_input('Weight After Casting (kg)')
+  wgt_cure = st.number_input('Weight After Curing (kg)')
+  
+  # Display a button to trigger the prediction
+  if st.button('Predict'):
+    # Make a prediction with the model
+    comp_strength = predict(cement, sand, aggregate, wcr, fib_length, perc_add, wgt_cast, wgt_cure)
+    
+    # Display the prediction
+    st.write(f'Predicted Compressive Strength: {comp_strength} N/mm²')
 
-    t = float(cement) + float(water) + float(slag) + float(ash) + float(superplastic) + float(coarseagg) + float(
-        fineagg)
-
-    safe_html = """  
-      <div style="background-color:#F4D03F;padding:10px >
-       <h2 style="color:white;text-align:center;"> Concrete is strong enough!</h2>
-       </div>
-    """
-    danger_html = """  
-      <div style="background-color:#F08080;padding:10px >
-       <h2 style="color:black ;text-align:center;"> Concrete is not strong enough!</h2>
-       </div>
-    """
-    c = float(cement)
-    w = float(water)
-    aggre = float(slag) + float(ash) + float(superplastic) + \
-        float(coarseagg) + float(fineagg)
-    if t == 0:
-        t = 1
-        c_per = int((100 * c) / t)
-        w_per = int((100 * w) / t)
-        aggre_per = int((100 * aggre) / t)
-    else:
-        c_per = int((100 * c) / t)
-        w_per = int((100 * w) / t)
-        aggre_per = int((100 * aggre) / t)
-
-    if st.button("Predict"):
-        output = int(predict_strength(cement, slag, ash, water,
-                     superplastic, coarseagg, fineagg, age))
-
-        if c >= 0.07 * t and c <= .15 * t and w >= 0.14 * t and w <= .21 * t and float(
-                age) != 0 and aggre >= 0.6 * t and aggre <= .75 * t:
-            st.success('Predicted Concrete Strength is {} Mpa'.format(output))
-            if output < 17:
-                st.markdown(danger_html, unsafe_allow_html=True)
-            else:
-                st.markdown(safe_html, unsafe_allow_html=True)
-
-        if float(age) == 0:
-            st.success("Age can not be zero!")
-        else:
-            if c < 0.07 * t:
-                st.success(
-                    "Add more cement, current cement content is {}%\n\nIdeal cement content in mixture is 7-15%".format(
-                        c_per))
-                if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success(
-                        'Predicted Concrete Strength is {} Mpa'.format(output))
-            elif c > 0.15 * t:
-                st.success(
-                    "Reduce cement content, current cement content is {}%\n\nIdeal cement content in mixture is 7-15%".format(
-                        c_per))
-                if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success(
-                        'Predicted Concrete Strength is {} Mpa'.format(output))
-
-            if w < 0.14 * t:
-                st.success(
-                    "Add more water, current water content is {}%\n\nIdeal water content in mixture is 14-21%".format(
-                        w_per))
-                if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success(
-                        'Predicted Concrete Strength is {} Mpa'.format(output))
-            elif w > .21 * t:
-                st.success(
-                    "Reduce water, current water content is {}%\n\nIdeal water content in mixture is 14-21%".format(
-                        w_per))
-                if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success(
-                        'Predicted Concrete Strength is {} Mpa'.format(output))
-
-            if aggre < 0.60 * t:
-                st.success(
-                    "Add more Aggregate, current Aggregate content is {}%\n\nIdeal Aggregate content in mixture is 60-75%".format(
-                        aggre_per))
-                if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success(
-                        'Predicted Concrete Strength is {} Mpa'.format(output))
-            elif aggre > .75 * t:
-                st.success(
-                    "Reduce Aggregate content, current Aggregate content is {}%\n\nIdeal Aggregate content in mixture is 60-75%".format(
-                        aggre_per))
-                if c > .01 * t and w > 0.02 * t and aggre > 0.1:
-                    st.success(
-                        'Predicted Concrete Strength is {} Mpa'.format(output))
-
-
+# Run the main function
 if __name__ == '__main__':
-    main()
+  main()
